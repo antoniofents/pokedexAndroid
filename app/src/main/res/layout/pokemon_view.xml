@@ -17,18 +17,6 @@
         android:layout_below="@id/poke_image"
         android:layout_alignParentRight="true"
         />
-    <Spinner
-        android:id="@+id/times"
-        android:layout_width="96dp"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/poke_image"
-        android:layout_alignParentRight="true" />
-    <Button
-        android:layout_width="96dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/times"
-        android:layout_alignParentRight="true"
-        android:text="@string/more_info" />
 
 
 

@@ -1,5 +1,7 @@
 package com.example.afentanes.pokedexandroid;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,9 +22,11 @@ import java.util.List;
 public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter.PokemonViewHolder> {
 
     List<Pokemon> pokemonList;
+    Activity activity;
 
-    public PokemonViewAdapter(List<Pokemon> pokemonList){
+    public PokemonViewAdapter(List<Pokemon> pokemonList, Activity activity){
         this.pokemonList=pokemonList;
+        this.activity=activity;
     }
     class PokemonViewHolder extends RecyclerView.ViewHolder{
         RelativeLayout pokemon_view;
@@ -35,6 +39,13 @@ public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter
     @Override
     public PokemonViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RelativeLayout view = (RelativeLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.pokemon_view, parent, false);
+        view.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                activity.startActivity(new Intent(activity , PokemonDescActivity.class));
+                return false;
+            }
+        });
         return new PokemonViewHolder(view);
     }
 
@@ -46,7 +57,6 @@ public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter
         TextView textView = holder.pokemon_view.findViewById(R.id.poke_name);
         textView.setText(pokemon.name );
     }
-
 
 
     @Override

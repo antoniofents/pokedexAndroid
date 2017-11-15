@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private void initPokemons(){
         RecyclerView pokemonList = (RecyclerView) findViewById(R.id.pokemon_list);
         pokemonList.setLayoutManager(new LinearLayoutManager(this));
-        pokemonList.setAdapter(new PokemonViewAdapter(PokemonUtil.getPokemonsList()));
+        pokemonList.setAdapter(new PokemonViewAdapter(PokemonUtil.getPokemonsList(),this));
         pokemonList.setHasFixedSize(true);
     }
 }
