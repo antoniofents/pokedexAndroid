@@ -5,10 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.DisplayMetrics;
 
-/**
- * Created by afentanes on 11/14/17.
- */
-
 public class PokemonDescActivity extends Activity{
 
     @Override

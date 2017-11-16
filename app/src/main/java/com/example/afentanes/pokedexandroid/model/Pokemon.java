@@ -1,5 +1,7 @@
 package com.example.afentanes.pokedexandroid.model;
 
+import com.example.afentanes.pokedexandroid.PokemonUtil;
+
 /**
  * Created by afentanes on 11/13/17.
  */
@@ -15,5 +17,10 @@ public class Pokemon {
         this.url=url;
     }
 
-    public String id, name, url;
+    public String id, name, url, frontUrl;
+
+    public void initPokemon(){
+        this.id=url.split(PokemonUtil.patternPokemonIdUrl)[2];
+        frontUrl= "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+id+".png";
+    }
 }
