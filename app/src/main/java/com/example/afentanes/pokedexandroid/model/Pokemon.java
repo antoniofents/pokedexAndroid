@@ -1,6 +1,6 @@
 package com.example.afentanes.pokedexandroid.model;
 
-import com.example.afentanes.pokedexandroid.PokemonUtil;
+import com.example.afentanes.pokedexandroid.util.PokemonUtil;
 
 /**
  * Created by afentanes on 11/13/17.

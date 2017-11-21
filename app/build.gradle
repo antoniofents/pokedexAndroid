@@ -13,6 +13,9 @@ android {
         jackOptions {
             enabled true
         }
+        dataBinding {
+            enabled = true
+        }
     }
     buildTypes {
         release {
@@ -33,4 +36,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
 }
