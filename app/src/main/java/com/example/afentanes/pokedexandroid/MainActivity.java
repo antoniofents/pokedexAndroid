@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
 
     public void updatePokemonList(List<Pokemon> pokemons) {
         if(adapter==null){
-
             RecyclerView pokemonListView = (RecyclerView) findViewById(R.id.pokemon_list);
             pokemonListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
             adapter = new PokemonViewAdapter(pokemons, MainActivity.this);
