@@ -31,10 +31,12 @@ public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter
 
     private List<Pokemon> filteredList;
     private PokemonView pokemonView;
+    private PokemonViewModel pokemonViewModel;
 
-    public PokemonViewAdapter(List<Pokemon> pokemonList, PokemonView activity){
+    public PokemonViewAdapter(List<Pokemon> pokemonList, PokemonView activity, PokemonViewModel pokemonViewModel){
         this.filteredList =pokemonList;
         this.pokemonView=activity;
+        this.pokemonViewModel=pokemonViewModel;
     }
 
 
@@ -55,16 +57,7 @@ public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter
     @Override
     public PokemonViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-      //  RelativeLayout view = (RelativeLayout) inflater.inflate(R.layout.pokemon_view, parent, false);
         PokemonViewBinding binding = DataBindingUtil.inflate(inflater, R.layout.pokemon_view, parent, false);
-
-        /*view.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                activity.startActivity(new Intent(activity , PokemonDescActivity.class));
-                return false;
-            }
-        });*/
         return new PokemonViewHolder(binding);
     }
 
@@ -72,12 +65,8 @@ public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter
     public void onBindViewHolder(PokemonViewHolder holder, int position) {
         Pokemon pokemon= filteredList.get(position);
         holder.bind(pokemon);
+        pokemonViewModel.getImage(pokemon.frontUrl).into(holder.pokemonViewBinding.pokeImage);
 
-        /*ImageView img= holder.pokemon_view.findViewById(R.id.poke_image);
-        Pokemon pokemon = filteredList.get(position);
-        Glide.with(holder.pokemon_view.getContext()).load(pokemon.frontUrl).into(img);
-        TextView textView = holder.pokemon_view.findViewById(R.id.poke_name);
-        textView.setText(pokemon.name);*/
     }
 
 

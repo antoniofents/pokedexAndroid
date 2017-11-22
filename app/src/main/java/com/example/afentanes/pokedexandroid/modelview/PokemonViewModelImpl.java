@@ -3,6 +3,8 @@ package com.example.afentanes.pokedexandroid.modelview;
 
 import android.util.Log;
 
+import com.bumptech.glide.BitmapTypeRequest;
+import com.bumptech.glide.Glide;
 import com.example.afentanes.pokedexandroid.client.PokemonClient;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.model.PokemonListWrapper;
@@ -77,4 +79,11 @@ public class PokemonViewModelImpl implements PokemonViewModel {
     public void pokemonSelected() {
 
     }
+
+    @Override
+    public BitmapTypeRequest getImage(String url) {
+       return Glide.with(pokemonView.getContext()).load(url).asBitmap();
+    }
+
+
 }

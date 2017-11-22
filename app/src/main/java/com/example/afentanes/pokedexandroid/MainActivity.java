@@ -1,5 +1,6 @@
 package com.example.afentanes.pokedexandroid;
 
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -10,9 +11,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.afentanes.pokedexandroid.adapter.PokemonViewAdapter;
 import com.example.afentanes.pokedexandroid.client.PokemonClient;
 import com.example.afentanes.pokedexandroid.databinding.ActivityMainBinding;
@@ -41,13 +44,12 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // setContentView(R.layout.activity_main);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         pokemonViewModel = new PokemonViewModelImpl(this);
         binding.setPokemonViewModel(pokemonViewModel);
         initNavigationBar();
         pokemonViewModel.initPokemon();
-
+        addObserverForSearchField();
     }
 
     private void initNavigationBar() {
@@ -60,10 +62,9 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
         if (adapter == null) {
             RecyclerView pokemonListView = (RecyclerView) findViewById(R.id.pokemon_list);
             pokemonListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-            adapter = new PokemonViewAdapter(pokemons, MainActivity.this);
+            adapter = new PokemonViewAdapter(pokemons, MainActivity.this, pokemonViewModel);
             pokemonListView.setAdapter(adapter);
             pokemonListView.setHasFixedSize(true);
-            addObserverForSearchField();
             pokemonsAvailable = pokemons;
             binding.setPokemonsAvailable(pokemonsAvailable);
         } else {
@@ -74,7 +75,6 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
     }
 
     private void addObserverForSearchField() {
-
         SearchView searchView = (SearchView) findViewById(R.id.search_pokemon_view);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -95,6 +95,11 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
     @Override
     public void displayPokemonDescription(Pokemon pokemon) {
         MainActivity.this.startActivity(new Intent(MainActivity.this, PokemonDescActivity.class));
+    }
+
+    @Override
+    public Context getContext() {
+        return  this.getApplicationContext();
     }
 
 
