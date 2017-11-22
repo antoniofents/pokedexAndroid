@@ -10,7 +10,8 @@ import java.util.List;
 
 public interface PokemonViewModel {
 
-     void onSearchQueryChanged();
-     List<Pokemon> getFilteredResults(String constraint, List <Pokemon> pokemons);
+     public void onSearchQueryChanged();
+     public List<Pokemon> getFilteredResults(String constraint, List <Pokemon> pokemons);
      public void initPokemon();
+     public void pokemonSelected();
 }

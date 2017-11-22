@@ -36,7 +36,7 @@ public class PokemonViewModelImpl implements PokemonViewModel {
 
     public List<Pokemon> getFilteredResults(String constraint, List<Pokemon> pokemons) {
 
-
+        Log.i(this.getClass().toString() , "filter pokemons");
         if(constraint.length()>0){
             List<Pokemon> results = new ArrayList<>();
             for (Pokemon item : pokemons) {
@@ -51,8 +51,6 @@ public class PokemonViewModelImpl implements PokemonViewModel {
 
     public void initPokemon() {
 
-
-
         RestAdapter adapter = new RestAdapter.Builder().setEndpoint(PokemonUtil.ROOT_URL).build();
         PokemonClient pokeClient = adapter.create(PokemonClient.class);
         pokeClient.getPokemonList(new Callback<PokemonListWrapper>() {
@@ -60,7 +58,9 @@ public class PokemonViewModelImpl implements PokemonViewModel {
             public void success(PokemonListWrapper pokemonListWrapper, Response response) {
                 Log.i("RETROFIT   :", "loading pokemons success");
                 List<Pokemon> pokemonsAvailable = pokemonListWrapper.results;
-                pokemonsAvailable.stream().forEach(Pokemon::initPokemon);
+                for(Pokemon pokemon : pokemonsAvailable){
+                    pokemon.initPokemon();
+                }
                 pokemonView.updatePokemonList(pokemonsAvailable);
             }
 
@@ -70,6 +70,11 @@ public class PokemonViewModelImpl implements PokemonViewModel {
 
             }
         });
+
+    }
+
+    @Override
+    public void pokemonSelected() {
 
     }
 }

@@ -10,5 +10,6 @@ import java.util.List;
 
 public interface PokemonView {
     public void updatePokemonList(List<Pokemon> pokemons);
+    public void displayPokemonDescription(Pokemon pokemon);
 
 }
