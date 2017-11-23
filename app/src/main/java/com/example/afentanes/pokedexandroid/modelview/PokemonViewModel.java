@@ -12,8 +12,14 @@ import java.util.List;
 public interface PokemonViewModel {
 
      public void onSearchQueryChanged();
+
      public List<Pokemon> getFilteredResults(String constraint, List <Pokemon> pokemons);
+
      public void initPokemon();
-     public void pokemonSelected();
+
+     public void pokemonSelected(Pokemon pokemon);
+
      public BitmapTypeRequest getImage(String url);
+
+
 }

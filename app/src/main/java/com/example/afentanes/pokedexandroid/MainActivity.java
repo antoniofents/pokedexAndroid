@@ -24,6 +24,7 @@ import com.example.afentanes.pokedexandroid.model.PokemonListWrapper;
 import com.example.afentanes.pokedexandroid.modelview.PokemonView;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModel;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModelImpl;
+import com.example.afentanes.pokedexandroid.util.PokemonUtil;
 
 import java.util.List;
 
@@ -94,7 +95,12 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
 
     @Override
     public void displayPokemonDescription(Pokemon pokemon) {
-        MainActivity.this.startActivity(new Intent(MainActivity.this, PokemonDescActivity.class));
+
+        Intent intent = new Intent(MainActivity.this, PokemonDescActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(PokemonUtil.POKEMON_BUNDLE, pokemon);
+        intent.putExtras(bundle);
+       getApplicationContext().startActivity(intent);
     }
 
     @Override

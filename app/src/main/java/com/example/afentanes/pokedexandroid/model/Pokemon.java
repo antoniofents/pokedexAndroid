@@ -1,12 +1,15 @@
 package com.example.afentanes.pokedexandroid.model;
 
-import com.example.afentanes.pokedexandroid.util.PokemonUtil;
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
 
 /**
  * Created by afentanes on 11/13/17.
  */
 
-public class Pokemon {
+public class Pokemon implements Parcelable {
     Pokemon(){
 
     }
@@ -18,9 +21,41 @@ public class Pokemon {
     }
 
     public String id, name, url, frontUrl;
+    public ArrayList<EffectEntry> effectEntries;
+    public ArrayList<String> characteristics;
 
-    public void initPokemon(){
-        this.id=url.split(PokemonUtil.patternPokemonIdUrl)[2];
-        frontUrl= "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"+id+".png";
+
+    public static final Creator<Pokemon> CREATOR = new Creator<Pokemon>() {
+        @Override
+        public Pokemon createFromParcel(Parcel in) {
+            return new Pokemon(in);
+        }
+
+        @Override
+        public Pokemon[] newArray(int size) {
+            return new Pokemon[size];
+        }
+    };
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    protected Pokemon(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        url = in.readString();
+        in.readStringList(characteristics);
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeString(url);
+        parcel.writeStringList(characteristics);
+        //       parcel.writeList(effectEntries);
     }
 }

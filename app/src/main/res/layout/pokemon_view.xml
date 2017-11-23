@@ -6,6 +6,7 @@
     <data>
         <variable name="pokemon" type="com.example.afentanes.pokedexandroid.model.Pokemon" />
         <variable name="pokemonView" type="com.example.afentanes.pokedexandroid.modelview.PokemonView" />
+        <variable name="pokemonViewModel" type="com.example.afentanes.pokedexandroid.modelview.PokemonViewModel" />
     </data>
     <RelativeLayout
         android:orientation="vertical"
@@ -13,7 +14,7 @@
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:onClick="@{()-> pokemonView.displayPokemonDescription(pokemon)}">
+        android:onClick="@{()-> pokemonViewModel.pokemonSelected(pokemon)}">
 
         <ImageView
             android:id="@+id/poke_image"
