@@ -13,6 +13,7 @@ import com.example.afentanes.pokedexandroid.util.PokemonUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.jakewharton.rxbinding.widget.RxTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,12 +26,14 @@ import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.Observable;
 
 
 public class PokemonViewModelImpl implements PokemonViewModel {
 
 
     private final PokemonView pokemonView;
+
 
     public PokemonViewModelImpl(PokemonView pokemonView) {
         this.pokemonView = pokemonView;

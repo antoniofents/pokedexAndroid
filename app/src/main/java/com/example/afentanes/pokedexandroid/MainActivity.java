@@ -11,6 +11,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ import com.example.afentanes.pokedexandroid.modelview.PokemonView;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModel;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModelImpl;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
+import com.jakewharton.rxbinding.widget.RxTextView;
 
 import java.util.List;
 
@@ -32,6 +34,8 @@ import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import rx.Observable;
+import rx.Observer;
 
 public class MainActivity extends AppCompatActivity implements PokemonView {
 
@@ -40,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
     PokemonView pokemonView;
     PokemonViewAdapter adapter;
     ActivityMainBinding binding;
+    Observable<CharSequence> searchText;
+
 
 
     @Override
@@ -76,8 +82,31 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
     }
 
     private void addObserverForSearchField() {
-        SearchView searchView = (SearchView) findViewById(R.id.search_pokemon_view);
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        EditText searchEditText
+                = (EditText) findViewById(R.id.search_pokemon_text);
+
+        searchText= RxTextView.textChanges(searchEditText);
+        searchText.subscribe(new Observer<CharSequence>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(CharSequence charSequence) {
+                if(pokemonsAvailable!=null ){
+                    updatePokemonList(pokemonViewModel.getFilteredResults(String.valueOf(charSequence), pokemonsAvailable));
+                }
+                 }
+        });
+
+
+       /* searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 updatePokemonList(pokemonViewModel.getFilteredResults(query, pokemonsAvailable));
@@ -88,7 +117,7 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
                 return true;
             }
 
-        });
+        });*/
 
     }
 
@@ -96,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
     @Override
     public void displayPokemonDescription(Pokemon pokemon) {
 
-        Intent intent = new Intent(MainActivity.this, PokemonDescActivity.class);
+        Intent intent = new Intent(MainActivity.this.getContext(), PokemonDescActivity.class);
         Bundle bundle = new Bundle();
         bundle.putParcelable(PokemonUtil.POKEMON_BUNDLE, pokemon);
         intent.putExtras(bundle);
