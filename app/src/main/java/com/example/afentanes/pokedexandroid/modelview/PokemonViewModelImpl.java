@@ -63,6 +63,7 @@ public class PokemonViewModelImpl implements PokemonViewModel {
 
         RestAdapter adapter = new RestAdapter.Builder().setEndpoint(PokemonUtil.ROOT_URL).build();
         PokemonClient pokeClient = adapter.create(PokemonClient.class);
+
         pokeClient.getPokemonList(new Callback<PokemonListWrapper>() {
             @Override
             public void success(PokemonListWrapper pokemonListWrapper, Response response) {

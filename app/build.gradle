@@ -20,6 +20,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -34,4 +38,12 @@ dependencies {
     compile 'io.reactivex:rxjava:1.1.6'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
+
+    implementation "android.arch.lifecycle:runtime:1.0.0-rc1"
+    implementation "android.arch.lifecycle:extensions:1.0.0-rc1"
+    annotationProcessor "android.arch.lifecycle:compiler:1.0.0-rc1"
+
+    implementation "android.arch.lifecycle:extensions:1.0.0"
+    testImplementation "android.arch.core:core-testing:1.0.0"
+    implementation "android.arch.lifecycle:reactivestreams:1.0.0"
 }

@@ -85,39 +85,12 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
         EditText searchEditText
                 = (EditText) findViewById(R.id.search_pokemon_text);
 
-        searchText= RxTextView.textChanges(searchEditText);
-        searchText.subscribe(new Observer<CharSequence>() {
-            @Override
-            public void onCompleted() {
-
+        searchText = RxTextView.textChanges(searchEditText);
+        searchText.subscribe(text -> {
+            if (pokemonsAvailable != null) {
+                updatePokemonList(pokemonViewModel.getFilteredResults(String.valueOf(text), pokemonsAvailable));
             }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(CharSequence charSequence) {
-                if(pokemonsAvailable!=null ){
-                    updatePokemonList(pokemonViewModel.getFilteredResults(String.valueOf(charSequence), pokemonsAvailable));
-                }
-                 }
         });
-
-
-       /* searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                updatePokemonList(pokemonViewModel.getFilteredResults(query, pokemonsAvailable));
-                return true;
-            }
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return true;
-            }
-
-        });*/
 
     }
 
