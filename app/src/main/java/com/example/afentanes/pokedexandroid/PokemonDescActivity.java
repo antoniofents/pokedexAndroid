@@ -28,7 +28,10 @@ public class PokemonDescActivity extends Activity{
             weight.setText(pokemon.frontUrl);
             ImageView image= findViewById(R.id.pokemon_desc_image_id);
              Glide.with(getApplication()).load("https://img.pokemondb.net/artwork/"+pokemon.name+".jpg").asBitmap().into(image);
-           abilities.setText(pokemon.characteristics.get(0));
+           if(pokemon.characteristics!=null && !pokemon.characteristics.isEmpty()){
+               abilities.setText(pokemon.characteristics.get(0));
+           }
+
         }
 
 

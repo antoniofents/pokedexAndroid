@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class PokemonViewModelImpl extends AndroidViewModel implements PokemonViewModel {
@@ -53,25 +54,25 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
 
     public void initPokemon() {
 
-        RestAdapter adapter = new RestAdapter.Builder().setEndpoint(PokemonUtil.ROOT_URL).build();
+        Retrofit adapter = new Retrofit.Builder().baseUrl(PokemonUtil.ROOT_URL).addConverterFactory(GsonConverterFactory.create()).build();
         PokemonClient pokeClient = adapter.create(PokemonClient.class);
 
-        pokeClient.getPokemonList(new Callback<PokemonListWrapper>() {
+
+        Call<PokemonListWrapper> pokemonCall = pokeClient.getPokemonList();
+        pokemonCall.enqueue(new Callback<PokemonListWrapper>() {
             @Override
-            public void success(PokemonListWrapper pokemonListWrapper, Response response) {
+            public void onResponse(Call<PokemonListWrapper> call, Response<PokemonListWrapper> response) {
                 Log.i("RETROFIT   :", "loading pokemons success");
-                List<Pokemon> pokemonsAvailable = pokemonListWrapper.results;
+                List<Pokemon> pokemonsAvailable = response.body().results;
                 for(Pokemon pokemon : pokemonsAvailable){
                     initPokemon(pokemon);
                 }
                 pokemons=pokemonsAvailable;
                 pokemonList.setValue(pokemons);
             }
-
             @Override
-            public void failure(RetrofitError error) {
-                Log.i("RETROFIT   :", "failure");
-
+            public void onFailure(Call<PokemonListWrapper> call, Throwable t) {
+                Log.i("RETROFIT   :", "error");
             }
         });
 
@@ -86,63 +87,56 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     @Override
     public void pokemonSelected(final Pokemon pokemon) {
         Log.i(this.getClass().toString(), "pokemon selected: " + pokemon.name);
-
-        RestAdapter adapter = new RestAdapter.Builder().setEndpoint(PokemonUtil.ROOT_URL).build();
+        Retrofit adapter = new Retrofit.Builder().baseUrl(PokemonUtil.ROOT_URL).addConverterFactory(GsonConverterFactory.create()).build();
         final PokemonClient pokeClient = adapter.create(PokemonClient.class);
-        pokeClient.getPokemonAbilities(pokemon.id,
-                new Callback<JSONObject>() {
-                    @Override
-                    public void success(JSONObject result, Response response) {
 
-                        JSONArray effectEntries = null;
-                        try {
-                            if (result.has("effect_entries")) {
-                                effectEntries = result.getJSONArray("effect_entries");
-                                pokemon.effectEntries = new ArrayList<EffectEntry>();
-                                for (int i = 0; i < effectEntries.length(); i++) {
-                                    JSONObject entry = effectEntries.getJSONObject(i);
-                                    pokemon.effectEntries.add(new EffectEntry(entry.getString("short_effect"), entry.getString("effect")));
-                                }
-                            }
-                            pokemonSelected.setValue(pokemon);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+        pokeClient.getPokemonAbilities(pokemon.id).enqueue(new Callback<JSONObject>() {
+            @Override
+            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                JSONArray effectEntries = null;
+                try {
+                    if (response.body().has("effect_entries")) {
+                        effectEntries = response.body().getJSONArray("effect_entries");
+                        pokemon.effectEntries = new ArrayList<EffectEntry>();
+                        for (int i = 0; i < effectEntries.length(); i++) {
+                            JSONObject entry = effectEntries.getJSONObject(i);
+                            pokemon.effectEntries.add(new EffectEntry(entry.getString("short_effect"), entry.getString("effect")));
                         }
-
                     }
+                    pokemonSelected.setValue(pokemon);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Log.i("RETROFIT   :", "failure");
+            @Override
+            public void onFailure(Call<JSONObject> call, Throwable t) {
+                Log.i("RETROFIT   :", "failure");
+            }
+        });
 
-                    }
-                });
-
-        pokeClient.getPokemonCharasteristic(pokemon.id,
-                new Callback<JSONObject>() {
-                    @Override
-                    public void success(JSONObject result, Response response) {
-
-                        try {
-                            if (result.has("descriptions")) {
-                                JSONArray descriptions = result.getJSONArray("descriptions");
-                                pokemon.characteristics = new ArrayList<String>();
-                                for (int i = 0; i < descriptions.length(); i++) {
-                                    pokemon.characteristics.add(descriptions.getJSONObject(i).getString("description"));
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+        pokeClient.getPokemonCharasteristic(pokemon.id).enqueue(new Callback<JSONObject>() {
+            @Override
+            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                try {
+                    if (response.body().has("descriptions")) {
+                        JSONArray descriptions = response.body().getJSONArray("descriptions");
+                        pokemon.characteristics = new ArrayList<String>();
+                        for (int i = 0; i < descriptions.length(); i++) {
+                            pokemon.characteristics.add(descriptions.getJSONObject(i).getString("description"));
                         }
-
                     }
+                } catch (JSONException e) {
+                    Log.i("RETROFIT   :", "failure");
+                }
+            }
 
-                    @Override
-                    public void failure(RetrofitError error) {
-                        Log.i("RETROFIT   :", "failure");
+            @Override
+            public void onFailure(Call<JSONObject> call, Throwable t) {
 
-                    }
-                });
+            }
+        });
+
     }
 
     @Override
