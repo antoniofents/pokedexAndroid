@@ -1,7 +1,6 @@
 package com.example.afentanes.pokedexandroid.modelview;
 
 import android.content.Context;
-import android.widget.ImageView;
 
 import com.example.afentanes.pokedexandroid.model.Pokemon;
 

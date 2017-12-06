@@ -4,7 +4,6 @@ package com.example.afentanes.pokedexandroid.modelview;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
 import com.bumptech.glide.BitmapTypeRequest;
@@ -14,10 +13,6 @@ import com.example.afentanes.pokedexandroid.model.EffectEntry;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.model.PokemonListWrapper;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.jakewharton.rxbinding.widget.RxTextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -31,7 +26,6 @@ import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import rx.Observable;
 
 
 public class PokemonViewModelImpl extends AndroidViewModel implements PokemonViewModel {

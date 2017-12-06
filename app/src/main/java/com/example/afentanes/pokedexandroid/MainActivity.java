@@ -1,47 +1,30 @@
 package com.example.afentanes.pokedexandroid;
 
-import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.SearchView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.example.afentanes.pokedexandroid.adapter.PokemonViewAdapter;
-import com.example.afentanes.pokedexandroid.client.PokemonClient;
 import com.example.afentanes.pokedexandroid.databinding.ActivityMainBinding;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
-import com.example.afentanes.pokedexandroid.model.PokemonListWrapper;
 import com.example.afentanes.pokedexandroid.modelview.PokemonView;
-import com.example.afentanes.pokedexandroid.modelview.PokemonViewModel;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModelImpl;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import java.util.List;
-
-import retrofit.Callback;
-import retrofit.RestAdapter;
-import retrofit.RetrofitError;
-import retrofit.client.Response;
-import rx.Observable;
 
 public class MainActivity extends AppCompatActivity implements PokemonView,LifecycleOwner {
 
