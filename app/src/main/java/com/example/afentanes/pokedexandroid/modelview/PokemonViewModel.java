@@ -9,7 +9,6 @@ import com.example.afentanes.pokedexandroid.model.Pokemon;
 
 public interface PokemonViewModel {
 
-     public void onSearchQueryChanged();
 
      public void getFilteredResults(String constraint);
 

@@ -40,11 +40,6 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     }
 
 
-    @Override
-    public void onSearchQueryChanged() {
-
-    }
-
     public void getFilteredResults(String constraint) {
 
         Log.i(this.getClass().toString() , "filter pokemons");
@@ -148,8 +143,6 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
 
                     }
                 });
-
-        //pokemonView.displayPokemonDescription(pokemon);
     }
 
     @Override

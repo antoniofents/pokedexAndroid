@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
     @Override
     public void onStart() {
         super.onStart();
-    //
     }
 
     @NonNull
@@ -98,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
         Bundle bundle = new Bundle();
         bundle.putParcelable(PokemonUtil.POKEMON_BUNDLE, pokemon);
         intent.putExtras(bundle);
+        intent.putExtra(PokemonUtil.POKEMON_BUNDLE, pokemon);
        getApplicationContext().startActivity(intent);
     }
 
