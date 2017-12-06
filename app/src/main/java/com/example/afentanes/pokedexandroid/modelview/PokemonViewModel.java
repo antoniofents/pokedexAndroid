@@ -13,7 +13,7 @@ public interface PokemonViewModel {
 
      public void onSearchQueryChanged();
 
-     public List<Pokemon> getFilteredResults(String constraint, List <Pokemon> pokemons);
+     public void getFilteredResults(String constraint);
 
      public void initPokemon();
 

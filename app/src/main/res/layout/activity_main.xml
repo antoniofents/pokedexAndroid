@@ -6,7 +6,6 @@
 <data>
     <import type="java.util.List" />
     <variable name="pokemonViewModel" type="com.example.afentanes.pokedexandroid.modelview.PokemonViewModel" />
-    <variable name="pokemonsAvailable" type="java.util.List" />
 </data>
 
 <LinearLayout

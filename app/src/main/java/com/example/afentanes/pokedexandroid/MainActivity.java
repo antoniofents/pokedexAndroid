@@ -1,10 +1,17 @@
 package com.example.afentanes.pokedexandroid;
 
+import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -35,29 +42,50 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import rx.Observable;
-import rx.Observer;
 
-public class MainActivity extends AppCompatActivity implements PokemonView {
+public class MainActivity extends AppCompatActivity implements PokemonView,LifecycleOwner {
 
-    List<Pokemon> pokemonsAvailable;
-    PokemonViewModel pokemonViewModel;
+    PokemonViewModelImpl pokemonViewModel;
     PokemonView pokemonView;
     PokemonViewAdapter adapter;
     ActivityMainBinding binding;
-    Observable<CharSequence> searchText;
+    private LifecycleRegistry mLifecycleRegistry;
 
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mLifecycleRegistry = new LifecycleRegistry(this);
+        mLifecycleRegistry.markState(Lifecycle.State.STARTED);
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        pokemonViewModel = new PokemonViewModelImpl(this);
+        pokemonViewModel = ViewModelProviders.of(this).get(PokemonViewModelImpl.class);
+        addObservers();
         binding.setPokemonViewModel(pokemonViewModel);
         initNavigationBar();
-        pokemonViewModel.initPokemon();
-        addObserverForSearchField();
     }
+
+    private void addObservers() {
+        pokemonViewModel.getPokemonList().observe(this, pokemons -> {if(pokemons!=null)updatePokemonList(pokemons);});
+        pokemonViewModel.getPokemonSelected().observe(this, pokemon -> {displayPokemonDescription(pokemon);});
+        RxTextView.textChanges((EditText) findViewById(R.id.search_pokemon_text)).subscribe(text -> {
+            pokemonViewModel.getFilteredResults(String.valueOf(text));
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    //
+    }
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return mLifecycleRegistry;
+    }
+
 
     private void initNavigationBar() {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
@@ -72,8 +100,6 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
             adapter = new PokemonViewAdapter(pokemons, MainActivity.this, pokemonViewModel);
             pokemonListView.setAdapter(adapter);
             pokemonListView.setHasFixedSize(true);
-            pokemonsAvailable = pokemons;
-            binding.setPokemonsAvailable(pokemonsAvailable);
         } else {
             adapter.setFilteredList(pokemons);
             adapter.notifyDataSetChanged();
@@ -81,23 +107,10 @@ public class MainActivity extends AppCompatActivity implements PokemonView {
 
     }
 
-    private void addObserverForSearchField() {
-        EditText searchEditText
-                = (EditText) findViewById(R.id.search_pokemon_text);
-
-        searchText = RxTextView.textChanges(searchEditText);
-        searchText.subscribe(text -> {
-            if (pokemonsAvailable != null) {
-                updatePokemonList(pokemonViewModel.getFilteredResults(String.valueOf(text), pokemonsAvailable));
-            }
-        });
-
-    }
 
 
     @Override
     public void displayPokemonDescription(Pokemon pokemon) {
-
         Intent intent = new Intent(MainActivity.this.getContext(), PokemonDescActivity.class);
         Bundle bundle = new Bundle();
         bundle.putParcelable(PokemonUtil.POKEMON_BUNDLE, pokemon);

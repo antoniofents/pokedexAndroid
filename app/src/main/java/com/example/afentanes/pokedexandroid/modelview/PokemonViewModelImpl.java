@@ -1,6 +1,10 @@
 package com.example.afentanes.pokedexandroid.modelview;
 
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
 import android.util.Log;
 
 import com.bumptech.glide.BitmapTypeRequest;
@@ -21,6 +25,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
@@ -29,34 +34,32 @@ import retrofit.client.Response;
 import rx.Observable;
 
 
-public class PokemonViewModelImpl implements PokemonViewModel {
+public class PokemonViewModelImpl extends AndroidViewModel implements PokemonViewModel {
 
 
-    private final PokemonView pokemonView;
-
-
-    public PokemonViewModelImpl(PokemonView pokemonView) {
-        this.pokemonView = pokemonView;
+    private List<Pokemon> pokemons;
+    private MutableLiveData<List<Pokemon>> pokemonList;
+    private MutableLiveData<Pokemon> pokemonSelected;
+    public PokemonViewModelImpl(Application app){
+        super(app);
+        initPokemon();
     }
+
 
     @Override
     public void onSearchQueryChanged() {
 
     }
 
-    public List<Pokemon> getFilteredResults(String constraint, List<Pokemon> pokemons) {
+    public void getFilteredResults(String constraint) {
 
         Log.i(this.getClass().toString() , "filter pokemons");
         if(constraint.length()>0){
-            List<Pokemon> results = new ArrayList<>();
-            for (Pokemon item : pokemons) {
-                if (item.name.toLowerCase().contains(constraint)) {
-                    results.add(item);
-                }
-            }
-            return results;
+            List<Pokemon> result = new ArrayList<>();
+            pokemonList.setValue(pokemons.stream().filter(pokemon -> pokemon.name.toLowerCase().contains(constraint)).collect(Collectors.toList()));
+            return;
         }
-        return pokemons;
+        pokemonList.setValue(pokemons);
     }
 
     public void initPokemon() {
@@ -72,7 +75,8 @@ public class PokemonViewModelImpl implements PokemonViewModel {
                 for(Pokemon pokemon : pokemonsAvailable){
                     initPokemon(pokemon);
                 }
-                pokemonView.updatePokemonList(pokemonsAvailable);
+                pokemons=pokemonsAvailable;
+                pokemonList.setValue(pokemons);
             }
 
             @Override
@@ -103,12 +107,15 @@ public class PokemonViewModelImpl implements PokemonViewModel {
 
                         JSONArray effectEntries = null;
                         try {
-                            effectEntries = result.getJSONArray("effect_entries");
-                            pokemon.effectEntries = new ArrayList<EffectEntry>();
-                            for (int i = 0; i < effectEntries.length(); i++) {
-                                JSONObject entry = effectEntries.getJSONObject(i);
-                                pokemon.effectEntries.add(new EffectEntry(entry.getString("short_effect"), entry.getString("effect")));
+                            if (result.has("effect_entries")) {
+                                effectEntries = result.getJSONArray("effect_entries");
+                                pokemon.effectEntries = new ArrayList<EffectEntry>();
+                                for (int i = 0; i < effectEntries.length(); i++) {
+                                    JSONObject entry = effectEntries.getJSONObject(i);
+                                    pokemon.effectEntries.add(new EffectEntry(entry.getString("short_effect"), entry.getString("effect")));
+                                }
                             }
+                            pokemonSelected.setValue(pokemon);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -128,12 +135,13 @@ public class PokemonViewModelImpl implements PokemonViewModel {
                     public void success(JSONObject result, Response response) {
 
                         try {
-                            JSONArray descriptions = result.getJSONArray("descriptions");
-                            pokemon.characteristics= new ArrayList<String>();
-                            for (int i = 0; i < descriptions.length(); i++) {
-                                pokemon.characteristics.add(descriptions.getJSONObject(i).getString("description"));
+                            if (result.has("descriptions")) {
+                                JSONArray descriptions = result.getJSONArray("descriptions");
+                                pokemon.characteristics = new ArrayList<String>();
+                                for (int i = 0; i < descriptions.length(); i++) {
+                                    pokemon.characteristics.add(descriptions.getJSONObject(i).getString("description"));
+                                }
                             }
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -147,13 +155,27 @@ public class PokemonViewModelImpl implements PokemonViewModel {
                     }
                 });
 
-        pokemonView.displayPokemonDescription(pokemon);
+        //pokemonView.displayPokemonDescription(pokemon);
     }
 
     @Override
     public BitmapTypeRequest getImage(String url) {
-       return Glide.with(pokemonView.getContext()).load(url).asBitmap();
+       return Glide.with(getApplication()).load(url).asBitmap();
     }
 
 
+    public MutableLiveData<List<Pokemon>> getPokemonList() {
+        if(pokemonList == null){
+            pokemonList= new MutableLiveData<>();
+            pokemonList.setValue(new ArrayList<>());
+        }
+        return pokemonList;
+    }
+
+    public MutableLiveData<Pokemon> getPokemonSelected() {
+        if(pokemonSelected == null){
+            pokemonSelected= new MutableLiveData<>();
+        }
+        return pokemonSelected;
+    }
 }
