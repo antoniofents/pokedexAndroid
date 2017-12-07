@@ -13,15 +13,21 @@ import com.example.afentanes.pokedexandroid.model.EffectEntry;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.model.PokemonListWrapper;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -87,7 +93,27 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     @Override
     public void pokemonSelected(final Pokemon pokemon) {
         Log.i(this.getClass().toString(), "pokemon selected: " + pokemon.name);
-        Retrofit adapter = new Retrofit.Builder().baseUrl(PokemonUtil.ROOT_URL).addConverterFactory(GsonConverterFactory.create()).build();
+
+        /*OkHttpClient.Builder httpClientBuilder= new OkHttpClient.Builder();
+        httpClientBuilder.addInterceptor(new Interceptor() {
+            @Override
+            public okhttp3.Response intercept(Chain chain) throws IOException {
+
+                Request originalRequest= chain.request();
+                Request request = originalRequest.newBuilder()
+                        .addHeader("Accept", "application/json")
+                        .addHeader("Content-Type", "application/json")
+                        .method(originalRequest.method(), originalRequest.body()).build();
+                return chain.proceed(request);
+            }
+        });
+
+        OkHttpClient okHttpClient=  httpClientBuilder.build();
+
+        Retrofit adapter = new Retrofit.Builder()
+                .baseUrl(PokemonUtil.ROOT_URL).addConverterFactory(GsonConverterFactory.create())
+                .client(okHttpClient)
+                .build();
         final PokemonClient pokeClient = adapter.create(PokemonClient.class);
 
         pokeClient.getPokemonAbilities(pokemon.id).enqueue(new Callback<JSONObject>() {
@@ -103,7 +129,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
                             pokemon.effectEntries.add(new EffectEntry(entry.getString("short_effect"), entry.getString("effect")));
                         }
                     }
-                    pokemonSelected.setValue(pokemon);
+                            pokemonSelected.setValue(pokemon);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -112,30 +138,39 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
             @Override
             public void onFailure(Call<JSONObject> call, Throwable t) {
                 Log.i("RETROFIT   :", "failure");
+                t.printStackTrace();
             }
-        });
+        });*/
 
-        pokeClient.getPokemonCharasteristic(pokemon.id).enqueue(new Callback<JSONObject>() {
+        Retrofit adapterCharacteristics = new Retrofit.Builder()
+                .baseUrl(PokemonUtil.ROOT_URL).addConverterFactory(GsonConverterFactory.create())
+                .build();
+        adapterCharacteristics.create(PokemonClient.class).getPokemonCharasteristic(pokemon.id).enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 try {
                     if (response.body().has("descriptions")) {
-                        JSONArray descriptions = response.body().getJSONArray("descriptions");
+                        JsonArray descriptions = response.body().getAsJsonArray("descriptions");
+
                         pokemon.characteristics = new ArrayList<String>();
-                        for (int i = 0; i < descriptions.length(); i++) {
-                            pokemon.characteristics.add(descriptions.getJSONObject(i).getString("description"));
+                        for (int i = 0; i < descriptions.size(); i++) {
+                            pokemon.characteristics.add(descriptions.get(i).getAsJsonObject().get("description").getAsString());
                         }
                     }
-                } catch (JSONException e) {
+                    pokemonSelected.setValue(pokemon);
+                } catch (Exception e) {
                     Log.i("RETROFIT   :", "failure");
+                    e.printStackTrace();
                 }
             }
 
             @Override
-            public void onFailure(Call<JSONObject> call, Throwable t) {
+            public void onFailure(Call<JsonObject> call, Throwable t) {
 
             }
         });
+
+
 
     }
 

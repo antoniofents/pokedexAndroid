@@ -47,7 +47,8 @@ public class Pokemon implements Parcelable {
         id = in.readString();
         name = in.readString();
         url = in.readString();
-        in.readStringList(new ArrayList<>());
+        characteristics= new ArrayList<>();
+        in.readList(characteristics, null);
     }
 
     @Override
@@ -55,7 +56,7 @@ public class Pokemon implements Parcelable {
         parcel.writeString(id);
         parcel.writeString(name);
         parcel.writeString(url);
-        parcel.writeStringList(characteristics);
+        parcel.writeList(characteristics);
         //       parcel.writeList(effectEntries);
     }
 }
