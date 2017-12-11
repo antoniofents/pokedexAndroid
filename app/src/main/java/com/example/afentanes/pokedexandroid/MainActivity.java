@@ -10,6 +10,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +23,8 @@ import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.modelview.PokemonView;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModelImpl;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
 import java.util.List;
@@ -41,7 +44,6 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
         super.onCreate(savedInstanceState);
         mLifecycleRegistry = new LifecycleRegistry(this);
         mLifecycleRegistry.markState(Lifecycle.State.STARTED);
-
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         pokemonViewModel = ViewModelProviders.of(this).get(PokemonViewModelImpl.class);
         addObservers();
@@ -60,7 +62,23 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
     @Override
     public void onStart() {
         super.onStart();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        showLogin(currentUser);
+
+
     }
+
+    public void showLogin(FirebaseUser firebaseUser) {
+        if (firebaseUser == null) {
+            LoginFragment loginFragment = new LoginFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.fragment_container, loginFragment);
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
+
+    }
+
 
     @NonNull
     @Override
