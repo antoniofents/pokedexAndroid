@@ -1,18 +1,13 @@
 package com.example.afentanes.pokedexandroid.client;
 
 
-import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.model.PokemonListWrapper;
 import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
-import java.util.List;
-
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.http.GET;
-import retrofit2.http.Headers;
 import retrofit2.http.Path;
 
 

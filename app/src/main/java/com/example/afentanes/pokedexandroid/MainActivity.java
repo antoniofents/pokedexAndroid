@@ -10,17 +10,17 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.example.afentanes.pokedexandroid.adapter.PokemonViewAdapter;
 import com.example.afentanes.pokedexandroid.databinding.ActivityMainBinding;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
-import com.example.afentanes.pokedexandroid.modelview.PokemonView;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModelImpl;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,10 +29,9 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements PokemonView,LifecycleOwner {
+public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
 
     PokemonViewModelImpl pokemonViewModel;
-    PokemonView pokemonView;
     PokemonViewAdapter adapter;
     ActivityMainBinding binding;
     private LifecycleRegistry mLifecycleRegistry;
@@ -63,9 +62,6 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
     public void onStart() {
         super.onStart();
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-        showLogin(currentUser);
-
-
     }
 
     @Override
@@ -74,16 +70,6 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
         FirebaseAuth.getInstance().signOut();
     }
 
-    public void showLogin(FirebaseUser firebaseUser) {
-        if (firebaseUser == null) {
-            LoginFragment loginFragment = new LoginFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, loginFragment, "login");
-            fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
-        }
-
-    }
 
 
     @NonNull
@@ -96,6 +82,13 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
     private void initNavigationBar() {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        if(getIntent()!=null){
+            String user= getIntent().getStringExtra("user");
+            if(user!=null){
+                initLogoutBar(user);
+            }
+        }
     }
 
 
@@ -103,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
         if (adapter == null) {
             RecyclerView pokemonListView = (RecyclerView) findViewById(R.id.pokemon_list);
             pokemonListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-            adapter = new PokemonViewAdapter(pokemons, MainActivity.this, pokemonViewModel);
+            adapter = new PokemonViewAdapter(pokemons, pokemonViewModel);
             pokemonListView.setAdapter(adapter);
             pokemonListView.setHasFixedSize(true);
         } else {
@@ -113,9 +106,6 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
 
     }
 
-
-
-    @Override
     public void displayPokemonDescription(Pokemon pokemon) {
         Intent intent = new Intent(MainActivity.this.getContext(), PokemonDescActivity.class);
         Bundle bundle = new Bundle();
@@ -125,7 +115,17 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
        getApplicationContext().startActivity(intent);
     }
 
-    @Override
+
+    private void initLogoutBar(String user){
+        Button logout = findViewById(R.id.log_out);
+        logout.setOnClickListener(view -> {
+            FirebaseAuth.getInstance().signOut();
+        });
+
+        TextView userLabel = findViewById(R.id.user_id_label);
+        userLabel.setText(user);
+    }
+
     public Context getContext() {
         return  this.getApplicationContext();
     }

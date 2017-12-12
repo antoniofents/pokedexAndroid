@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import com.example.afentanes.pokedexandroid.R;
 import com.example.afentanes.pokedexandroid.databinding.PokemonViewBinding;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
-import com.example.afentanes.pokedexandroid.modelview.PokemonView;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModel;
 
 import java.util.List;
@@ -19,12 +18,10 @@ import java.util.List;
 public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter.PokemonViewHolder>{
 
     private List<Pokemon> filteredList;
-    private PokemonView pokemonView;
     private PokemonViewModel pokemonViewModel;
 
-    public PokemonViewAdapter(List<Pokemon> pokemonList, PokemonView activity, PokemonViewModel pokemonViewModel){
+    public PokemonViewAdapter(List<Pokemon> pokemonList, PokemonViewModel pokemonViewModel){
         this.filteredList =pokemonList;
-        this.pokemonView=activity;
         this.pokemonViewModel=pokemonViewModel;
     }
 
@@ -39,7 +36,6 @@ public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter
 
         public void bind(@NonNull Pokemon pokemon) {
             pokemonViewBinding.setPokemon(pokemon);
-            pokemonViewBinding.setPokemonView(pokemonView);
             pokemonViewBinding.setPokemonViewModel(pokemonViewModel);
             pokemonViewBinding.executePendingBindings();
         }
@@ -69,35 +65,4 @@ public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter
         this.filteredList=pokemons;
 
     }
-
-
-      /*
-    will be used for rx observable
-    @Override
-    public Filter getFilter() {
-
-        return new Filter() {
-            @SuppressWarnings("unchecked")
-            @Override
-            protected void publishResults(CharSequence constraint, FilterResults results) {
-                filteredList = (List<Pokemon>) results.values;
-                PokemonViewAdapter.this.notifyDataSetChanged();
-            }
-
-            @Override
-            protected FilterResults performFiltering(CharSequence constraint) {
-                List<Pokemon> filteredResults = null;
-                if (constraint.length() == 0) {
-                    filteredResults = pokemonList;
-                } else {
-                   // filteredResults = pokemonViewModel.getFilteredResults(constraint.toString(), pokemonList);
-                }
-
-                FilterResults results = new FilterResults();
-                results.values = filteredResults;
-
-                return results;
-            }
-        };
-    }*/
 }

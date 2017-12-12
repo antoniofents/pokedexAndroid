@@ -9,25 +9,16 @@ import android.util.Log;
 import com.bumptech.glide.BitmapTypeRequest;
 import com.bumptech.glide.Glide;
 import com.example.afentanes.pokedexandroid.client.PokemonClient;
-import com.example.afentanes.pokedexandroid.model.EffectEntry;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.model.PokemonListWrapper;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,7 +34,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     private MutableLiveData<Pokemon> pokemonSelected;
     public PokemonViewModelImpl(Application app){
         super(app);
-        initPokemon();
+        initPokemonList();
     }
 
 
@@ -58,7 +49,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
         pokemonList.setValue(pokemons);
     }
 
-    public void initPokemon() {
+    public void initPokemonList() {
 
         Retrofit adapter = new Retrofit.Builder().baseUrl(PokemonUtil.ROOT_URL).addConverterFactory(GsonConverterFactory.create()).build();
         PokemonClient pokeClient = adapter.create(PokemonClient.class);

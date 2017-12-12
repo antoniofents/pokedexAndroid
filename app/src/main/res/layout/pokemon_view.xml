@@ -5,7 +5,6 @@
 
     <data>
         <variable name="pokemon" type="com.example.afentanes.pokedexandroid.model.Pokemon" />
-        <variable name="pokemonView" type="com.example.afentanes.pokedexandroid.modelview.PokemonView" />
         <variable name="pokemonViewModel" type="com.example.afentanes.pokedexandroid.modelview.PokemonViewModel" />
     </data>
     <RelativeLayout
@@ -28,8 +27,6 @@
             android:layout_alignParentRight="true"
             android:text="@{pokemon.name}"
             />
-
-
 
     </RelativeLayout>
 </layout>

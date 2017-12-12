@@ -12,7 +12,7 @@ public interface PokemonViewModel {
 
      public void getFilteredResults(String constraint);
 
-     public void initPokemon();
+     public void initPokemonList();
 
      public void pokemonSelected(Pokemon pokemon);
 
