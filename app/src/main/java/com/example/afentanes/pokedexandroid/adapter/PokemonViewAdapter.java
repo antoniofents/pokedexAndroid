@@ -65,4 +65,35 @@ public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter
         this.filteredList=pokemons;
 
     }
+
+
+      /*
+    will be used for rx observable
+    @Override
+    public Filter getFilter() {
+
+        return new Filter() {
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                filteredList = (List<Pokemon>) results.values;
+                PokemonViewAdapter.this.notifyDataSetChanged();
+            }
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                List<Pokemon> filteredResults = null;
+                if (constraint.length() == 0) {
+                    filteredResults = pokemonList;
+                } else {
+                   // filteredResults = pokemonViewModel.getFilteredResults(constraint.toString(), pokemonList);
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = filteredResults;
+
+                return results;
+            }
+        };
+    }*/
 }
