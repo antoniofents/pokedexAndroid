@@ -3,6 +3,7 @@ package com.example.afentanes.pokedexandroid;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,6 @@ public class LoginFragment extends Fragment {
 
     @Override
     public void onStart() {
-
         super.onStart();
         Button login = getActivity().findViewById(R.id.login_button);
         login.setOnClickListener(view -> {
@@ -37,12 +37,34 @@ public class LoginFragment extends Fragment {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             FirebaseUser currentUser = firebaseInstance.getCurrentUser();
+                            TextView userLabel = getActivity().findViewById(R.id.user_id_label);
+                            userLabel.setText(currentUser.getEmail());
                         }
+                        addLogout();
+                        hideFragment();
 
                     });
-
-
         });
+        Button cancel = getActivity().findViewById(R.id.cancel_button);
+        cancel.setOnClickListener(view -> hideFragment());
+    }
+
+    private void hideFragment() {
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+        ft.hide(getActivity().getSupportFragmentManager().findFragmentByTag("login"));
+        ft.commit();
+    }
+
+
+    private void addLogout(){
+        Button logout = getActivity().findViewById(R.id.log_out);
+        logout.setVisibility(View.VISIBLE);
+        logout.setOnClickListener(view -> {
+            FirebaseAuth.getInstance().signOut();
+            hideFragment();
+        });
+
     }
 
 

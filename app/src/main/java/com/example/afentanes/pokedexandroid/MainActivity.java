@@ -68,11 +68,17 @@ public class MainActivity extends AppCompatActivity implements PokemonView,Lifec
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        FirebaseAuth.getInstance().signOut();
+    }
+
     public void showLogin(FirebaseUser firebaseUser) {
         if (firebaseUser == null) {
             LoginFragment loginFragment = new LoginFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.fragment_container, loginFragment);
+            fragmentTransaction.replace(R.id.fragment_container, loginFragment, "login");
             fragmentTransaction.addToBackStack(null);
             fragmentTransaction.commit();
         }
