@@ -41,9 +41,10 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.2.0'
     compile 'com.jakewharton.rxbinding:rxbinding:0.4.0'
 
-    implementation "android.arch.lifecycle:runtime:1.0.0-rc1"
-    implementation "android.arch.lifecycle:extensions:1.0.0-rc1"
-    annotationProcessor "android.arch.lifecycle:compiler:1.0.0-rc1"
+    implementation "android.arch.lifecycle:common-java8:1.0.0-rc1"
+    compile 'android.arch.lifecycle:extensions:1.0.0-alpha9-1'
+
+    implementation "android.arch.paging:runtime:1.0.0-alpha3"
 
     implementation "android.arch.lifecycle:extensions:1.0.0"
     testImplementation "android.arch.core:core-testing:1.0.0"

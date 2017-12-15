@@ -14,10 +14,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.example.afentanes.pokedexandroid.adapter.PokemonListAdapter;
 import com.example.afentanes.pokedexandroid.adapter.PokemonViewAdapter;
 import com.example.afentanes.pokedexandroid.databinding.ActivityMainBinding;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
@@ -32,7 +34,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
 
     PokemonViewModelImpl pokemonViewModel;
-    PokemonViewAdapter adapter;
+    RecyclerView.Adapter adapter;
     ActivityMainBinding binding;
     private LifecycleRegistry mLifecycleRegistry;
 
@@ -51,10 +53,22 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
     }
 
     private void addObservers() {
-        pokemonViewModel.getPokemonList().observe(this, pokemons -> {if(pokemons!=null)updatePokemonList(pokemons);});
+        pokemonViewModel.getPokemonList().observe(this, pokemons -> {if(pokemons.size()>0){initPokemonPagedList();}/*if(pokemons!=null)updatePokemonList(pokemons);*/});
         pokemonViewModel.getPokemonSelected().observe(this, pokemon -> {displayPokemonDescription(pokemon);});
         RxTextView.textChanges((EditText) findViewById(R.id.search_pokemon_text)).subscribe(text -> {
             pokemonViewModel.getFilteredResults(String.valueOf(text));
+        });
+
+    }
+
+    private void initPokemonPagedList() {
+        adapter = new PokemonListAdapter(pokemonViewModel);
+        pokemonViewModel.getPokemonPagedList().observe(this, pokemonList -> {
+            ((PokemonListAdapter)adapter).setList(pokemonList);
+            RecyclerView pokemonListView = (RecyclerView) findViewById(R.id.pokemon_list);
+            pokemonListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+            pokemonListView.setAdapter(adapter);
+            pokemonListView.setHasFixedSize(true);
         });
     }
 
@@ -67,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
     @Override
     protected void onStop() {
         super.onStop();
-        FirebaseAuth.getInstance().signOut();
+       // FirebaseAuth.getInstance().signOut();
     }
 
 
@@ -94,14 +108,14 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
 
     public void updatePokemonList(List<Pokemon> pokemons) {
         if (adapter == null) {
-            RecyclerView pokemonListView = (RecyclerView) findViewById(R.id.pokemon_list);
+          /*  RecyclerView pokemonListView = (RecyclerView) findViewById(R.id.pokemon_list);
             pokemonListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
             adapter = new PokemonViewAdapter(pokemons, pokemonViewModel);
             pokemonListView.setAdapter(adapter);
-            pokemonListView.setHasFixedSize(true);
+            pokemonListView.setHasFixedSize(true);*/
         } else {
-            adapter.setFilteredList(pokemons);
-            adapter.notifyDataSetChanged();
+           // adapter.setFilteredList(pokemons);
+           // adapter.notifyDataSetChanged();
         }
 
     }

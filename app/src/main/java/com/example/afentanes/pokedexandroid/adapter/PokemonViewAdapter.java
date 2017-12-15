@@ -35,7 +35,7 @@ public class PokemonViewAdapter extends RecyclerView.Adapter <PokemonViewAdapter
         }
 
         public void bind(@NonNull Pokemon pokemon) {
-            pokemonViewBinding.setPokemon(pokemon);
+            pokemonViewBinding.setPokemonSelected(pokemon);
             pokemonViewBinding.setPokemonViewModel(pokemonViewModel);
             pokemonViewBinding.executePendingBindings();
         }

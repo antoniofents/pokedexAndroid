@@ -53,7 +53,6 @@ public class LoginActivity extends AppCompatActivity implements LifecycleOwner {
         super.onStart();
         lifecycleRegistry.markState(Lifecycle.State.STARTED);
         addObservers();
-            showLogin();
     }
 
     @Override
@@ -62,9 +61,5 @@ public class LoginActivity extends AppCompatActivity implements LifecycleOwner {
         lifecycleRegistry.markState(Lifecycle.State.RESUMED);
     }
 
-
-    public void showLogin() {
-
-    }
 
 }

@@ -3,7 +3,12 @@ package com.example.afentanes.pokedexandroid.modelview;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.arch.paging.DataSource;
+import android.arch.paging.LivePagedListProvider;
+import android.arch.paging.PagedList;
+import android.arch.paging.TiledDataSource;
 import android.util.Log;
 
 import com.bumptech.glide.BitmapTypeRequest;
@@ -29,9 +34,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class PokemonViewModelImpl extends AndroidViewModel implements PokemonViewModel {
 
 
-    private List<Pokemon> pokemons;
+    private List<Pokemon> pokemons= new ArrayList<>();
     private MutableLiveData<List<Pokemon>> pokemonList;
     private MutableLiveData<Pokemon> pokemonSelected;
+   // private LivePagedListProvider<Integer, Pokemon> pokemonPagedList;
+    private LiveData<PagedList<Pokemon>> pokemonPagedList;
     public PokemonViewModelImpl(Application app){
         super(app);
         initPokemonList();
@@ -46,7 +53,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
             pokemonList.setValue(pokemons.stream().filter(pokemon -> pokemon.name.toLowerCase().contains(constraint)).collect(Collectors.toList()));
             return;
         }
-        pokemonList.setValue(pokemons);
+        getPokemonList().setValue(pokemons);
     }
 
     public void initPokemonList() {
@@ -65,7 +72,8 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
                     initPokemon(pokemon);
                 }
                 pokemons=pokemonsAvailable;
-                pokemonList.setValue(pokemons);
+                getPokemonList().setValue(pokemons);
+                initLiveDataPokemonList();
             }
             @Override
             public void onFailure(Call<PokemonListWrapper> call, Throwable t) {
@@ -184,5 +192,32 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
             pokemonSelected= new MutableLiveData<>();
         }
         return pokemonSelected;
+    }
+
+    public LiveData<PagedList<Pokemon>> getPokemonPagedList() {
+        if(pokemonPagedList==null){
+            initLiveDataPokemonList();
+        }
+        return pokemonPagedList;
+    }
+
+    private void initLiveDataPokemonList() {
+            pokemonPagedList = new LivePagedListProvider<Integer, Pokemon>() {
+                @Override
+                protected DataSource<Integer, Pokemon> createDataSource() {
+                    return new TiledDataSource<Pokemon>() {
+                        @Override
+                        public int countItems() {
+                            return pokemons.size();
+                        }
+
+                        @Override
+                        public List<Pokemon> loadRange(int startPosition, int count) {
+                            return pokemons.subList(startPosition, startPosition + count);
+                        }
+                    };
+                }
+            }.create(0, new PagedList.Config.Builder().setPageSize(9).setPageSize(pokemons.size()).setEnablePlaceholders(true).setPrefetchDistance(5).build());
+
     }
 }
