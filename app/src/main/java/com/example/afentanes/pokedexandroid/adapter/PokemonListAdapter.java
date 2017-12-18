@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.example.afentanes.pokedexandroid.R;
+import com.example.afentanes.pokedexandroid.animation.AnimationUtil;
 import com.example.afentanes.pokedexandroid.databinding.PokemonViewBinding;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModel;
@@ -21,6 +22,8 @@ import java.util.List;
  */
 
 public class PokemonListAdapter extends PagedListAdapter <Pokemon, PokemonListAdapter.PokemonListViewHolder> {
+
+    int currentPosition=0;
 
     private PokemonViewModelImpl pokemonViewModel;
     public PokemonListAdapter( PokemonViewModelImpl pokemonViewModel) {
@@ -41,6 +44,9 @@ public class PokemonListAdapter extends PagedListAdapter <Pokemon, PokemonListAd
         holder.bind(pokemon);
         pokemonViewModel.getImage(pokemon.frontUrl).into(holder.pokemonViewBinding.pokeImage);
 
+        AnimationUtil.animate(holder,position>currentPosition );
+
+        currentPosition= position;
     }
 
     class PokemonListViewHolder extends RecyclerView.ViewHolder{
