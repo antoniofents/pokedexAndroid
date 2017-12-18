@@ -10,6 +10,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -44,14 +45,19 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
         mLifecycleRegistry = new LifecycleRegistry(this);
         mLifecycleRegistry.markState(Lifecycle.State.STARTED);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        displayLoadingFragment();
         pokemonViewModel = ViewModelProviders.of(this).get(PokemonViewModelImpl.class);
         addObservers();
         binding.setPokemonViewModel(pokemonViewModel);
         initNavigationBar();
+
     }
 
     private void addObservers() {
-        pokemonViewModel.getPokemonList().observe(this, pokemons -> {if(pokemons.size()>0){updatePokemonList(pokemons);}});
+        pokemonViewModel.getPokemonList().observe(this, pokemons ->
+        {
+           updatePokemonList(pokemons);
+        });
         pokemonViewModel.getPokemonSelected().observe(this, pokemon -> {displayPokemonDescription(pokemon);});
         RxTextView.textChanges((EditText) findViewById(R.id.search_pokemon_text)).subscribe(text -> {
             if(adapter!=null)
@@ -98,16 +104,20 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
 
     public void updatePokemonList(List<Pokemon> pokemons) {
         if (adapter == null) {
-            adapter = new PokemonListAdapter(pokemonViewModel);
-            pokemonViewModel.getPokemonPagedList().observe(this, pokemonList -> {
-                ((PokemonListAdapter)adapter).setList(pokemonList);
-                RecyclerView pokemonListView = (RecyclerView) findViewById(R.id.pokemon_list);
-                pokemonListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
-                pokemonListView.setAdapter(adapter);
-                pokemonListView.setHasFixedSize(true);
-            });
+            if(pokemons.size()>0){
+                adapter = new PokemonListAdapter(pokemonViewModel);
+                pokemonViewModel.getPokemonPagedList().observe(this, pokemonList -> {
+                    ((PokemonListAdapter)adapter).setList(pokemonList);
+                    RecyclerView pokemonListView = (RecyclerView) findViewById(R.id.pokemon_list);
+                    pokemonListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                    pokemonListView.setAdapter(adapter);
+                    pokemonListView.setHasFixedSize(true);
+                    hideLoadingFragment();
+                });
+            }
         } else {
             adapter.notifyDataSetChanged();
+            hideLoadingFragment();
         }
 
     }
@@ -155,4 +165,19 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
         }
 
     };
+
+    public void displayLoadingFragment(){
+        LoadingFragment loadingFragment= new LoadingFragment();
+        FragmentTransaction transaction= getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.content, loadingFragment,"loading");
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
+    public void hideLoadingFragment() {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.setCustomAnimations(android.R.animator.fade_in, android.R.animator.fade_out);
+        ft.hide(getSupportFragmentManager().findFragmentByTag("loading"));
+        ft.commit();
+    }
 }
