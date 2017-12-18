@@ -14,16 +14,22 @@ import android.util.Log;
 import com.bumptech.glide.BitmapTypeRequest;
 import com.bumptech.glide.Glide;
 import com.example.afentanes.pokedexandroid.client.PokemonClient;
+import com.example.afentanes.pokedexandroid.model.EffectEntry;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.model.PokemonListWrapper;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,7 +43,6 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     private List<Pokemon> pokemons= new ArrayList<>();
     private MutableLiveData<List<Pokemon>> pokemonList;
     private MutableLiveData<Pokemon> pokemonSelected;
-   // private LivePagedListProvider<Integer, Pokemon> pokemonPagedList;
     private LiveData<PagedList<Pokemon>> pokemonPagedList;
     public PokemonViewModelImpl(Application app){
         super(app);
@@ -46,7 +51,6 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
 
 
     public void getFilteredResults(String constraint) {
-
         Log.i(this.getClass().toString() , "filter pokemons");
         if(constraint.length()>0){
             List<Pokemon> result = new ArrayList<>();
@@ -73,7 +77,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
                 }
                 pokemons=pokemonsAvailable;
                 getPokemonList().setValue(pokemons);
-                initLiveDataPokemonList();
+               initLiveDataPokemonList();
             }
             @Override
             public void onFailure(Call<PokemonListWrapper> call, Throwable t) {
@@ -93,7 +97,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     public void pokemonSelected(final Pokemon pokemon) {
         Log.i(this.getClass().toString(), "pokemon selected: " + pokemon.name);
 
-        /*OkHttpClient.Builder httpClientBuilder= new OkHttpClient.Builder();
+        OkHttpClient.Builder httpClientBuilder= new OkHttpClient.Builder();
         httpClientBuilder.addInterceptor(new Interceptor() {
             @Override
             public okhttp3.Response intercept(Chain chain) throws IOException {
@@ -115,31 +119,31 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
                 .build();
         final PokemonClient pokeClient = adapter.create(PokemonClient.class);
 
-        pokeClient.getPokemonAbilities(pokemon.id).enqueue(new Callback<JSONObject>() {
+        pokeClient.getPokemonAbilities(pokemon.id).enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                JSONArray effectEntries = null;
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                JsonArray effectEntries = null;
                 try {
                     if (response.body().has("effect_entries")) {
-                        effectEntries = response.body().getJSONArray("effect_entries");
+                        effectEntries = response.body().getAsJsonArray("effect_entries");
                         pokemon.effectEntries = new ArrayList<EffectEntry>();
-                        for (int i = 0; i < effectEntries.length(); i++) {
-                            JSONObject entry = effectEntries.getJSONObject(i);
-                            pokemon.effectEntries.add(new EffectEntry(entry.getString("short_effect"), entry.getString("effect")));
+                        for (int i = 0; i < effectEntries.size(); i++) {
+                            JsonObject entry = effectEntries.get(i).getAsJsonObject();
+                            pokemon.effectEntries.add(new EffectEntry(entry.get("short_effect").getAsString(), entry.get("effect").getAsString()));
                         }
                     }
                             pokemonSelected.setValue(pokemon);
-                } catch (JSONException e) {
+                } catch (JsonIOException e) {
                     e.printStackTrace();
                 }
             }
 
             @Override
-            public void onFailure(Call<JSONObject> call, Throwable t) {
-                Log.i("RETROFIT   :", "failure");
-                t.printStackTrace();
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
             }
-        });*/
+
+        });
 
         Retrofit adapterCharacteristics = new Retrofit.Builder()
                 .baseUrl(PokemonUtil.ROOT_URL).addConverterFactory(GsonConverterFactory.create())
@@ -201,6 +205,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
         return pokemonPagedList;
     }
 
+
     private void initLiveDataPokemonList() {
             pokemonPagedList = new LivePagedListProvider<Integer, Pokemon>() {
                 @Override
@@ -208,16 +213,22 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
                     return new TiledDataSource<Pokemon>() {
                         @Override
                         public int countItems() {
-                            return pokemons.size();
+                            return pokemonList.getValue().size();
                         }
 
                         @Override
                         public List<Pokemon> loadRange(int startPosition, int count) {
-                            return pokemons.subList(startPosition, startPosition + count);
+                            return pokemonList.getValue().subList(startPosition, startPosition + count);
                         }
                     };
                 }
-            }.create(0, new PagedList.Config.Builder().setPageSize(9).setPageSize(pokemons.size()).setEnablePlaceholders(true).setPrefetchDistance(5).build());
+            }.create(0, new PagedList.Config.Builder()
+                    .setPageSize(9)
+                    .setPageSize(pokemonList.getValue().size())
+                    .setEnablePlaceholders(true)
+                    .setPrefetchDistance(5)
+                    .build());
 
     }
+
 }

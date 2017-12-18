@@ -12,6 +12,7 @@ import com.example.afentanes.pokedexandroid.R;
 import com.example.afentanes.pokedexandroid.databinding.PokemonViewBinding;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModel;
+import com.example.afentanes.pokedexandroid.modelview.PokemonViewModelImpl;
 
 import java.util.List;
 
@@ -21,8 +22,8 @@ import java.util.List;
 
 public class PokemonListAdapter extends PagedListAdapter <Pokemon, PokemonListAdapter.PokemonListViewHolder> {
 
-    private PokemonViewModel pokemonViewModel;
-    public PokemonListAdapter( PokemonViewModel pokemonViewModel) {
+    private PokemonViewModelImpl pokemonViewModel;
+    public PokemonListAdapter( PokemonViewModelImpl pokemonViewModel) {
         super(DIFF_CALLBACK);
         this.pokemonViewModel= pokemonViewModel;
     }
@@ -36,7 +37,7 @@ public class PokemonListAdapter extends PagedListAdapter <Pokemon, PokemonListAd
 
     @Override
     public void onBindViewHolder(PokemonListViewHolder holder, int position) {
-        Pokemon pokemon= getItem(position);
+        Pokemon pokemon= pokemonViewModel.getPokemonList().getValue().get(position);
         holder.bind(pokemon);
         pokemonViewModel.getImage(pokemon.frontUrl).into(holder.pokemonViewBinding.pokeImage);
 
@@ -69,4 +70,10 @@ public class PokemonListAdapter extends PagedListAdapter <Pokemon, PokemonListAd
             return oldPokemon.name.equals(newPokemon.name);
         }
     };
+
+
+    @Override
+    public int getItemCount() {
+        return  pokemonViewModel.getPokemonList().getValue().size();
+    }
 }

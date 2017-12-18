@@ -23,7 +23,7 @@ public interface PokemonClient {
     public Call<PokemonListWrapper> getPokemonList();
 
     @GET("/api/v2/ability/{id}/")
-    public Call<JSONObject> getPokemonAbilities(@Path("id") String id);
+    public Call<JsonObject> getPokemonAbilities(@Path("id") String id);
 
     @GET("/api/v2/characteristic/{id}")
     public  Call <JsonObject>  getPokemonCharasteristic(@Path("id") String id);
