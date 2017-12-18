@@ -38,7 +38,6 @@ public class LoginActivity extends AppCompatActivity implements LifecycleOwner {
     public void addObservers(){
         viewModel.getUser().observe(this, value ->{
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("username", value);
             startActivity(intent);
         });
         //add zip event

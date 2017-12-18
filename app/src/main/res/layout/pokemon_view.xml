@@ -7,26 +7,28 @@
         <variable name="pokemonSelected" type="com.example.afentanes.pokedexandroid.model.Pokemon" />
         <variable name="pokemonViewModel" type="com.example.afentanes.pokedexandroid.modelview.PokemonViewModel" />
     </data>
+
     <RelativeLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:onClick="@{()-> pokemonViewModel.pokemonSelected(pokemonSelected)}"
+        android:orientation="vertical"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:onClick="@{()-> pokemonViewModel.pokemonSelected(pokemonSelected)}">
+        tools:elevation="3dp">
 
         <ImageView
             android:id="@+id/poke_image"
             android:layout_width="40dp"
             android:layout_height="40dp" />
+
         <TextView
             android:id="@+id/poke_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/poke_image"
             android:layout_alignParentRight="true"
-            android:text="@{pokemonSelected.name}"
-            />
+            android:layout_below="@id/poke_image"
+            android:text="@{pokemonSelected.name}" />
 
     </RelativeLayout>
 </layout>

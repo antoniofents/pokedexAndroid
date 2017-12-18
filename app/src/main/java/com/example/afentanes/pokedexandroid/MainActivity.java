@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -27,6 +28,8 @@ import com.example.afentanes.pokedexandroid.util.PokemonUtil;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.jakewharton.rxbinding.widget.RxTextView;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -49,20 +52,17 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
         pokemonViewModel = ViewModelProviders.of(this).get(PokemonViewModelImpl.class);
         addObservers();
         binding.setPokemonViewModel(pokemonViewModel);
-        initNavigationBar();
 
     }
 
     private void addObservers() {
-        pokemonViewModel.getPokemonList().observe(this, pokemons ->
-        {
-           updatePokemonList(pokemons);
-        });
+        pokemonViewModel.getPokemonList().observe(this, this::updatePokemonList);
         pokemonViewModel.getPokemonSelected().observe(this, pokemon -> {displayPokemonDescription(pokemon);});
         RxTextView.textChanges((EditText) findViewById(R.id.search_pokemon_text)).subscribe(text -> {
             if(adapter!=null)
             pokemonViewModel.getFilteredResults(String.valueOf(text));
         });
+        pokemonViewModel.getUserLogged().observe(this, user->{userChanged(user);});
 
     }
 
@@ -71,13 +71,12 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
     @Override
     public void onStart() {
         super.onStart();
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-       // FirebaseAuth.getInstance().signOut();
+        FirebaseAuth.getInstance().signOut();
     }
 
 
@@ -88,18 +87,6 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
         return mLifecycleRegistry;
     }
 
-
-    private void initNavigationBar() {
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        if(getIntent()!=null){
-            String user= getIntent().getStringExtra("user");
-            if(user!=null){
-                initLogoutBar(user);
-            }
-        }
-    }
 
 
     public void updatePokemonList(List<Pokemon> pokemons) {
@@ -132,14 +119,20 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
     }
 
 
-    private void initLogoutBar(String user){
-        Button logout = findViewById(R.id.log_out);
-        logout.setOnClickListener(view -> {
-            FirebaseAuth.getInstance().signOut();
-        });
-
+    private void userChanged(String user){
         TextView userLabel = findViewById(R.id.user_id_label);
-        userLabel.setText(user);
+        Button logout = findViewById(R.id.log_out);
+        if(user!=null && !user.isEmpty()){
+            logout.setVisibility(View.VISIBLE);
+            logout.setOnClickListener(view -> {
+                pokemonViewModel.logoutUser();
+            });
+            userLabel.setText(user);
+        }else{
+            userLabel.setText("non logged user");
+            logout.setVisibility(View.INVISIBLE);
+        }
+
     }
 
     public Context getContext() {
@@ -147,24 +140,6 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
     }
 
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.navigation_home:
-                    return true;
-                case R.id.navigation_dashboard:
-                    return true;
-                case R.id.navigation_notifications:
-
-                    return true;
-            }
-            return false;
-        }
-
-    };
 
     public void displayLoadingFragment(){
         LoadingFragment loadingFragment= new LoadingFragment();

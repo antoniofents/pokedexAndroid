@@ -18,6 +18,8 @@ import com.example.afentanes.pokedexandroid.model.EffectEntry;
 import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.model.PokemonListWrapper;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
@@ -43,10 +45,12 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     private List<Pokemon> pokemons= new ArrayList<>();
     private MutableLiveData<List<Pokemon>> pokemonList;
     private MutableLiveData<Pokemon> pokemonSelected;
+    private MutableLiveData<String> userLogged;
     private LiveData<PagedList<Pokemon>> pokemonPagedList;
     public PokemonViewModelImpl(Application app){
         super(app);
         initPokemonList();
+        checkUserlogin();
     }
 
 
@@ -85,6 +89,13 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
             }
         });
 
+    }
+
+    private void checkUserlogin(){
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if(currentUser!=null){
+            getUserLogged().setValue(currentUser.getEmail());
+        }
     }
 
     public void initPokemon(Pokemon pokemon){
@@ -231,4 +242,15 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
 
     }
 
+    public MutableLiveData<String> getUserLogged() {
+        if(userLogged==null){
+            userLogged= new MutableLiveData<>();
+        }
+        return userLogged;
+    }
+
+    public void logoutUser(){
+        FirebaseAuth.getInstance().signOut();
+        userLogged.setValue(null);
+    }
 }
