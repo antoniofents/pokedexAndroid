@@ -16,10 +16,9 @@
 
     <ImageView
         android:id="@+id/pokemon_desc_image_id"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_below="@id/poke_name"
-        />
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_below="@id/poke_name" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,10 +28,9 @@
         >
 
         <TextView
-            android:id="@+id/weight_id"
+            android:id="@+id/short_effect_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:text="weight" />
 
         <TextView

@@ -27,6 +27,7 @@ import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import okhttp3.Interceptor;
@@ -66,10 +67,12 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
 
     public void initPokemonList() {
 
-        Retrofit adapter = new Retrofit.Builder().baseUrl(PokemonUtil.ROOT_URL).addConverterFactory(GsonConverterFactory.create()).build();
+        OkHttpClient okHttpClient=  new OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS).build();
+
+        Retrofit adapter = new Retrofit.Builder().baseUrl(PokemonUtil.ROOT_URL).client(okHttpClient).addConverterFactory(GsonConverterFactory.create()).build();
         PokemonClient pokeClient = adapter.create(PokemonClient.class);
 
-
+        Log.i("RETROFIT   :", "LOADING POKEMONS");
         Call<PokemonListWrapper> pokemonCall = pokeClient.getPokemonList();
         pokemonCall.enqueue(new Callback<PokemonListWrapper>() {
             @Override
@@ -122,7 +125,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
             }
         });
 
-        OkHttpClient okHttpClient=  httpClientBuilder.build();
+        OkHttpClient okHttpClient=  httpClientBuilder.connectTimeout(5, TimeUnit.SECONDS).build();
 
         Retrofit adapter = new Retrofit.Builder()
                 .baseUrl(PokemonUtil.ROOT_URL).addConverterFactory(GsonConverterFactory.create())

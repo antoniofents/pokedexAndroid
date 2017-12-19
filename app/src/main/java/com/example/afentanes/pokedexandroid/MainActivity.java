@@ -5,16 +5,13 @@ import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,10 +23,7 @@ import com.example.afentanes.pokedexandroid.model.Pokemon;
 import com.example.afentanes.pokedexandroid.modelview.PokemonViewModelImpl;
 import com.example.afentanes.pokedexandroid.util.PokemonUtil;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.jakewharton.rxbinding.widget.RxTextView;
-
-import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -110,12 +104,11 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
     }
 
     public void displayPokemonDescription(Pokemon pokemon) {
-        Intent intent = new Intent(MainActivity.this.getContext(), PokemonDescActivity.class);
+        PokemonDescDialog pokemonDescDialog= new PokemonDescDialog();
         Bundle bundle = new Bundle();
         bundle.putParcelable(PokemonUtil.POKEMON_BUNDLE, pokemon);
-        intent.putExtras(bundle);
-        intent.putExtra(PokemonUtil.POKEMON_BUNDLE, pokemon);
-       getApplicationContext().startActivity(intent);
+        pokemonDescDialog.setArguments(bundle);
+        pokemonDescDialog.show(getSupportFragmentManager(),"pokemonDesc");
     }
 
 
