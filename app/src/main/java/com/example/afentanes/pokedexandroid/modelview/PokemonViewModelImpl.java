@@ -47,6 +47,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     private MutableLiveData<List<Pokemon>> pokemonList;
     private MutableLiveData<Pokemon> pokemonSelected;
     private MutableLiveData<String> userLogged;
+    private MutableLiveData<Boolean> loading;
     private LiveData<PagedList<Pokemon>> pokemonPagedList;
     public PokemonViewModelImpl(Application app){
         super(app);
@@ -59,7 +60,12 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
         Log.i(this.getClass().toString() , "filter pokemons");
         if(constraint.length()>0){
             List<Pokemon> result = new ArrayList<>();
-            pokemonList.setValue(pokemons.stream().filter(pokemon -> pokemon.name.toLowerCase().contains(constraint)).collect(Collectors.toList()));
+            for(Pokemon pokF: pokemons){
+                if( pokF.name.toLowerCase().contains(constraint.toLowerCase())){
+                    result.add(pokF);
+                }
+            }
+           getPokemonList().setValue( result);
             return;
         }
         getPokemonList().setValue(pokemons);
@@ -67,6 +73,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
 
     public void initPokemonList() {
 
+        getLoading().setValue(true);
         OkHttpClient okHttpClient=  new OkHttpClient.Builder().connectTimeout(15, TimeUnit.SECONDS).build();
 
         Retrofit adapter = new Retrofit.Builder().baseUrl(PokemonUtil.ROOT_URL).client(okHttpClient).addConverterFactory(GsonConverterFactory.create()).build();
@@ -110,6 +117,7 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     @Override
     public void pokemonSelected(final Pokemon pokemon) {
         Log.i(this.getClass().toString(), "pokemon selected: " + pokemon.name);
+        getLoading().setValue(true);
 
         OkHttpClient.Builder httpClientBuilder= new OkHttpClient.Builder();
         httpClientBuilder.addInterceptor(new Interceptor() {
@@ -255,5 +263,12 @@ public class PokemonViewModelImpl extends AndroidViewModel implements PokemonVie
     public void logoutUser(){
         FirebaseAuth.getInstance().signOut();
         userLogged.setValue(null);
+    }
+
+    public MutableLiveData<Boolean> getLoading() {
+        if(loading==null){
+            loading=new MutableLiveData<>();
+        }
+        return loading;
     }
 }

@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
             pokemonViewModel.getFilteredResults(String.valueOf(text));
         });
         pokemonViewModel.getUserLogged().observe(this, user->{userChanged(user);});
+        pokemonViewModel.getLoading().observe(this, loading -> {if(loading){displayLoadingFragment();}else{hideLoadingFragment();}});
 
     }
 
@@ -94,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
                     pokemonListView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
                     pokemonListView.setAdapter(adapter);
                     pokemonListView.setHasFixedSize(true);
-                    hideLoadingFragment();
+                    pokemonViewModel.getLoading().setValue(false);
                 });
             }
         } else {
@@ -106,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
                 search_label.setErrorEnabled(false);
             }
             adapter.notifyDataSetChanged();
-            hideLoadingFragment();
+            pokemonViewModel.getLoading().setValue(false);
         }
 
     }
@@ -116,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
         Bundle bundle = new Bundle();
         bundle.putParcelable(PokemonUtil.POKEMON_BUNDLE, pokemon);
         pokemonDescDialog.setArguments(bundle);
+        pokemonViewModel.getLoading().setValue(false);
         pokemonDescDialog.show(getSupportFragmentManager(),"pokemonDesc");
     }
 

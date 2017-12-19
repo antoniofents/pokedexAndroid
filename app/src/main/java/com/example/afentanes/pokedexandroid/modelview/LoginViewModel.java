@@ -18,19 +18,24 @@ public class LoginViewModel extends AndroidViewModel {
     }
 
     private MutableLiveData<String> user;
+    private MutableLiveData<Boolean> error;
 
     public void logUser(String user, String password){
-        FirebaseAuth firebaseInstance = FirebaseAuth.getInstance();
-        firebaseInstance.signInWithEmailAndPassword(user, password)
-                .addOnFailureListener(task ->{
-                    task.getMessage();
-                })
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        FirebaseUser currentUser = firebaseInstance.getCurrentUser();
-                        getUser().setValue(currentUser.getEmail());
-                    }
-                });
+        if (user != null && !user.isEmpty()) {
+            FirebaseAuth firebaseInstance = FirebaseAuth.getInstance();
+            firebaseInstance.signInWithEmailAndPassword(user.trim(), password.trim())
+                    .addOnFailureListener(task -> {
+                        task.getMessage();
+                        getError().setValue(true);
+                    })
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser currentUser = firebaseInstance.getCurrentUser();
+                            getUser().setValue(currentUser.getEmail());
+                        }
+                    });
+        }
+
     }
 
     public MutableLiveData<String> getUser() {
@@ -38,5 +43,11 @@ public class LoginViewModel extends AndroidViewModel {
             user= new MutableLiveData<>();
         }
         return user;
+    }
+    public MutableLiveData<Boolean> getError() {
+        if(error==null){
+            error= new MutableLiveData<>();
+        }
+        return error;
     }
 }
