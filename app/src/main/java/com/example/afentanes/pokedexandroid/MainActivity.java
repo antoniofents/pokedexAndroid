@@ -8,6 +8,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -97,6 +98,13 @@ public class MainActivity extends AppCompatActivity implements  LifecycleOwner {
                 });
             }
         } else {
+            TextInputLayout search_label = (TextInputLayout) findViewById(R.id.input_layout_search);
+            if(pokemons.size()==0){
+                search_label.setError(getString(R.string.not_found));
+                search_label.requestFocus();
+            }else{
+                search_label.setErrorEnabled(false);
+            }
             adapter.notifyDataSetChanged();
             hideLoadingFragment();
         }
